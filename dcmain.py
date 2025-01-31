@@ -102,10 +102,10 @@ def getWallet(uno):
     for wallet in walletitems:
         if wallet['currency'] != "KRW":
             coinn = "KRW-" + wallet['currency']
-            curr = [coinn, wallet['balance']+wallet['locked'], wallet['avg_buy_price'],round(float(wallet['balance']+wallet['locked']) * float(wallet['avg_buy_price']), 0) ]
+            curr = [coinn, float(wallet['balance'])+float(wallet['locked']), wallet['avg_buy_price'],round(float(wallet['balance']+wallet['locked']) * float(wallet['avg_buy_price']), 0) ]
             mycoins.append(curr)
         elif wallet['currency'] == "KRW":
-            curr = ["KRW", wallet['balance']+wallet['locked'], 1.00,round(float(wallet['balance']+wallet['locked'])*float(1.00),0) ]
+            curr = ["KRW", float(wallet['balance'])+float(wallet['locked']), 1.00, round((float(wallet['balance'])+float(wallet['locked']))*float(1.00),0) ]
             mycoins.append(curr)
         else:
             continue
