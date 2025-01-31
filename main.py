@@ -17,48 +17,13 @@ dbenv = os.getenv("db")
 charsetenv = os.getenv("charset")
 
 
-def getkey(uno):
-    global result
-    db1 = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
-    cur1 = db1.cursor()
-    try:
-        sql = "SELECT apikey1,apikey2 from traceUser WHERE userNo=%s and attrib not like %s"
-        cur1.execute(sql,(uno, '%XXX'))
-        result = cur1.fetchone()
-    except Exception as e:
-        print("Key 읽기 에러 ",e)
-    finally:
-        cur1.close()
-        db1.close()
-        return result
-
-
-def getcoinlist(uno):
-    global coinlist
-    db2 = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
-    cur2 = db2.cursor()
-    try:
-        sql = "SELECT DISTINCT bidCoin from traceSetup WHERE userNo=%s and (regDate >= DATE_ADD(now(), INTERVAL -1 MONTH ) or attrib not like %s)" #1개월 이내 거래 코인 목록
-        cur2.execute(sql,(uno,"XXXUP%"))
-        result = cur2.fetchall()
-        coinlist = []
-        for item in result:
-            coinlist.append(item[0])
-    except Exception as e:
-        print("거래코인 목록 읽기 에러 ",e)
-    finally:
-        cur2.close()
-        db2.close()
-        return coinlist
-
-
 def gettradelog(uno):
     global tradelog
-    keys = getkey(uno)
+    keys = dbconn.getkey(uno)
     key1 = keys[0]
     key2 = keys[1]
     upbit = pyupbit.Upbit(key1, key2)
-    coins = getcoinlist(uno)
+    coins = dbconn.getcoinlist(uno)
     tradelogsum = []
     for coin in coins:
         tradelog = upbit.get_order(coin,state='done')
@@ -66,48 +31,14 @@ def gettradelog(uno):
     return tradelogsum
 
 
-def insertLog(uno,ldata01,ldata02,ldata03,ldata04,ldata05,ldata06,ldata07,ldata08,ldata09,ldata10,ldata11,ldata12,ldata13):
-    global rows
-    db3 = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
-    cur3 = db3.cursor()
-    try:
-        sql = ("insert into tradeLogDone (userNo,uuid,side,ord_type,price,market,created_at,volume,remaining_volume,reserved_fee,paid_fee,locked,executed_volume,trades_count)"
-               " values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
-        cur3.execute(sql,(uno,ldata01,ldata02,ldata03,ldata04,ldata05,ldata06,ldata07,ldata08,ldata09,ldata10,ldata11,ldata12,ldata13))
-        db3.commit()
-    except Exception as e:
-        print("거래완료 기록 인서트 에러", e)
-    finally:
-        cur3.close()
-        db3.close()
-
-
-def checkuuid(uuid):
-    global rows
-    db4 = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
-    cur4 = db4.cursor()
-    try:
-        sql = "select count(*) from tradeLogDone where uuid=%s"
-        cur4.execute(sql,uuid)
-        result = cur4.fetchone()
-    except Exception as e:
-        print("uuid 조회 에러",e)
-    finally:
-        cur4.close()
-        db4.close()
-        return result[0]
-
-
 def setLog(uno):
     global rows
-    db5 = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
-    cur5 = db5.cursor()
     try:
         traderesults= gettradelog(uno)
         for trade in traderesults:
             for item in trade:
                 uuidchk = item["uuid"]
-                if checkuuid(uuidchk) != 0:
+                if dbconn.checkuuid(uuidchk) != 0:
                     print("이미 존재하는 거래")
                 else:
                     if item["side"] == "ask":
@@ -126,52 +57,65 @@ def setLog(uno):
                             ldata11 = item["locked"]
                             ldata12 = item["executed_volume"]
                             ldata13 = item["trades_count"]
-                            insertLog(uno, ldata01, ldata02, ldata03, ldata04, ldata05, ldata06, ldata07, ldata08, ldata09, ldata10, ldata11,ldata12, ldata13)
+                            dbconn.insertLog(uno, ldata01, ldata02, ldata03, ldata04, ldata05, ldata06, ldata07, ldata08, ldata09, ldata10, ldata11,ldata12, ldata13)
                     else:
                         print("매수거래 패스")
     except Exception as e:
         print("거래 기록 에러 ",e, "사용자 :", uno)
     finally:
-        cur5.close()
-        db5.close()
-
-
-def userlist():
-    global rows
-    db6 = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
-    cur6 = db6.cursor()
-    try:
-        sql = "select userNo from traceUser where apiKey1 is not null and attrib not like %s"
-        cur6.execute(sql, 'XXXUP')
-        rows = cur6.fetchall()
-    except Exception as e:
-        print("사용자 조회 에러",e)
-    finally:
-        cur6.close()
-        db6.close()
-        return rows
+        pass
 
 
 def runmain():
     try:
-        users = userlist()
+        users = dbconn.userlist()
         for user in users:
             setLog(user)
             time.sleep(1) #10초 대기 후 실행
     except Exception as e:
-        print("자동 반복 실행 에러",e)
+        print("자동 반복 거래기록 실행 에러",e)
     finally:
         return True
 
-# schedule.every(10).minutes.do(runmain)
+
+def runamt():
+    try:
+        users = dbconn.userlist()
+        for user in users:
+            items = getWallet(user)
+            for item in items:
+                dbconn.insertAmt(100001, item[0], float(item[1]), float(item[2]), float(item[3]))
+            time.sleep(1) #10초 대기 후 실행
+    except Exception as e:
+        print("자동 반복 자산 인서트 실행 에러",e)
+    finally:
+        return True
+
+
+def getWallet(uno):
+    mycoins = []
+    keys = dbconn.getkey(uno)
+    key1 = keys[0]
+    key2 = keys[1]
+    upbit = pyupbit.Upbit(key1, key2)
+    walletitems = upbit.get_balances()
+    for wallet in walletitems:
+        if wallet['currency'] != "KRW":
+            coinn = "KRW-" + wallet['currency']
+            curr = [coinn, wallet['balance']+wallet['locked'], wallet['avg_buy_price'],round(float(wallet['balance']+wallet['locked']) * float(wallet['avg_buy_price']), 0) ]
+            mycoins.append(curr)
+        elif wallet['currency'] == "KRW":
+            curr = ["KRW", wallet['balance']+wallet['locked'], 1.00,round(float(wallet['balance']+wallet['locked'])*float(1.00),0) ]
+            mycoins.append(curr)
+        else:
+            continue
+    return mycoins
+
+schedule.every(30).minutes.do(runmain)
+schedule.every(60).minutes.do(runamt)
 
 
 while True:
-#    schedule.run_pending()
-    try:
-        runmain()
-        time.sleep(1800)
-    except Exception as e:
-        print(e)
-    finally:
-        pass
+    schedule.run_pending()
+    time.sleep(1)
+
