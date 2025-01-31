@@ -134,9 +134,14 @@ schedule.every().day.at("23:00").do(runmain)
 schedule.every().day.at("00:00").do(runmain)
 
 schedule.every().day.at("00:30").do(runamt)
+schedule.every().day.at("03:30").do(runamt)
 schedule.every().day.at("06:30").do(runamt)
+schedule.every().day.at("09:30").do(runamt)
 schedule.every().day.at("12:30").do(runamt)
+schedule.every().day.at("15:30").do(runamt)
 schedule.every().day.at("18:30").do(runamt)
+schedule.every().day.at("21:30").do(runamt)
+schedule.every().day.at("23:30").do(runamt)
 
 
 while True:
