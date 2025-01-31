@@ -97,7 +97,8 @@ def getWallet(uno):
     key2 = keys[1]
     upbit = pyupbit.Upbit(key1, key2)
     walletitems = upbit.get_balances()
-    print(walletitems)
+    for item in walletitems:
+        print(item)
     for wallet in walletitems:
         if wallet['currency'] != "KRW":
             coinn = "KRW-" + wallet['currency']
