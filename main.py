@@ -106,12 +106,12 @@ def setLog(uno):
         traderesults= gettradelog(uno)
         for trade in traderesults:
             for item in trade:
-                print(item)
                 uuidchk = item["uuid"]
                 if checkuuid(uuidchk) != 0:
                     print("이미 존재하는 거래")
                 else:
                     if item["side"] == "ask":
+                        print(item)
                         if item.get("price") is not None:
                             ldata01 = item["uuid"]
                             ldata02 = item["side"]
