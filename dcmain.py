@@ -80,6 +80,7 @@ def runamt():
         users = dbconn.userlist()
         for user in users:
             items = getWallet(user)
+            print(items)
             for item in items:
                 dbconn.insertAmt(user[0], item[0], float(item[1]), float(item[2]), float(item[3]))
             time.sleep(1) #10초 대기 후 실행
@@ -96,6 +97,7 @@ def getWallet(uno):
     key2 = keys[1]
     upbit = pyupbit.Upbit(key1, key2)
     walletitems = upbit.get_balances()
+    print(walletitems)
     for wallet in walletitems:
         if wallet['currency'] != "KRW":
             coinn = "KRW-" + wallet['currency']
