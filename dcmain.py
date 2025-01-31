@@ -145,5 +145,6 @@ schedule.every().day.at("23:30").do(runamt)
 
 
 while True:
-    schedule.run_pending()
-    time.sleep(1)
+    # schedule.run_pending()
+    runamt()
+    time.sleep(1000)
