@@ -168,5 +168,10 @@ def runmain():
 
 while True:
 #    schedule.run_pending()
-    runmain()
-    time.sleep(1200)
+    try:
+        runmain()
+        time.sleep(1800)
+    except Exception as e:
+        print(e)
+    finally:
+        pass
