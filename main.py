@@ -1,10 +1,7 @@
-import pyupbit
 import dotenv
 import dbconn
-import dotenv
 import pyupbit
 import os
-import pymysql
 import schedule
 import time
 
@@ -84,7 +81,7 @@ def runamt():
         for user in users:
             items = getWallet(user)
             for item in items:
-                dbconn.insertAmt(100001, item[0], float(item[1]), float(item[2]), float(item[3]))
+                dbconn.insertAmt(user[0], item[0], float(item[1]), float(item[2]), float(item[3]))
             time.sleep(1) #10초 대기 후 실행
     except Exception as e:
         print("자동 반복 자산 인서트 실행 에러",e)
@@ -145,4 +142,3 @@ schedule.every().day.at("18:30").do(runamt)
 while True:
     schedule.run_pending()
     time.sleep(1)
-
