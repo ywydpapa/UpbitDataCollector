@@ -144,7 +144,7 @@ def runamt():
             print(items)
             for item in items:
                 dbconn.insertAmt(user[0], item[0], float(item[1]), float(item[2]), float(item[3]))
-            time.sleep(1) #10초 대기 후 실행
+            time.sleep(1) #1초 대기 후 실행
     except Exception as e:
         print("자동 반복 자산 인서트 실행 에러",e)
     finally:
@@ -158,7 +158,7 @@ def runamtpond():
             items = getWalletpond(user)
             for item in items:
                 dbconn.insertAmt(user[0], item[0], float(item[1]), float(item[2]), float(item[3]))
-            time.sleep(1) #10초 대기 후 실행
+            time.sleep(1) #1초 대기 후 실행
     except Exception as e:
         print("Pond 반복 자산 인서트 실행 에러",e)
     finally:
@@ -171,8 +171,6 @@ def getWallet(uno):
     key2 = keys[1]
     upbit = pyupbit.Upbit(key1, key2)
     walletitems = upbit.get_balances()
-    for item in walletitems:
-        print(item)
     for wallet in walletitems:
         if wallet['currency'] != "KRW":
             coinn = "KRW-" + wallet['currency']
@@ -193,8 +191,6 @@ def getWalletpond(uno):
     key2 = keys[1]
     upbit = pyupbit.Upbit(key1, key2)
     walletitems = upbit.get_balances()
-    for item in walletitems:
-        print(item)
     for wallet in walletitems:
         if wallet['currency'] != "KRW":
             coinn = "KRW-" + wallet['currency']
