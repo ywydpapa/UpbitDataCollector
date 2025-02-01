@@ -254,6 +254,5 @@ schedule.every().day.at("19:30").do(runamtpond)
 schedule.every().day.at("22:30").do(runamtpond)
 
 while True:
-    runamtpond()
     schedule.run_pending()
     time.sleep(10)
