@@ -27,12 +27,47 @@ def getkey(uno):
         return result
 
 
+def getkeypond(uno):
+    global result
+    db1 = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
+    cur1 = db1.cursor()
+    try:
+        sql = "SELECT apikey1,apikey2 from pondUser WHERE userNo=%s and attrib not like %s"
+        cur1.execute(sql,(uno, '%XXX'))
+        result = cur1.fetchone()
+    except Exception as e:
+        print("Key 읽기 에러 ",e)
+    finally:
+        cur1.close()
+        db1.close()
+        return result
+
+
 def getcoinlist(uno):
     global coinlist
     db2 = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
     cur2 = db2.cursor()
     try:
         sql = "SELECT DISTINCT bidCoin from traceSetup WHERE userNo=%s and (regDate >= DATE_ADD(now(), INTERVAL -1 WEEK ) or attrib not like %s)" #1주 이내 거래 코인 목록
+        cur2.execute(sql,(uno,"XXXUP%"))
+        result = cur2.fetchall()
+        coinlist = []
+        for item in result:
+            coinlist.append(item[0])
+    except Exception as e:
+        print("거래코인 목록 읽기 에러 ",e)
+    finally:
+        cur2.close()
+        db2.close()
+        return coinlist
+
+
+def getcoinlistpond(uno):
+    global coinlist
+    db2 = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
+    cur2 = db2.cursor()
+    try:
+        sql = "SELECT DISTINCT bidCoin from tradingSetup WHERE userNo=%s and (regDate >= DATE_ADD(now(), INTERVAL -1 WEEK ) or attrib not like %s)" #1주 이내 거래 코인 목록
         cur2.execute(sql,(uno,"XXXUP%"))
         result = cur2.fetchall()
         coinlist = []
