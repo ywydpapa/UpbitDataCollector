@@ -90,6 +90,20 @@ def runamt():
         return True
 
 
+def runamtpond():
+    try:
+        users = dbconn.userlistpond()
+        for user in users:
+            items = getWallet(user)
+            print(items)
+            for item in items:
+                dbconn.insertAmt(user[0], item[0], float(item[1]), float(item[2]), float(item[3]))
+            time.sleep(1) #10초 대기 후 실행
+    except Exception as e:
+        print("Pond 반복 자산 인서트 실행 에러",e)
+    finally:
+        return True
+
 def getWallet(uno):
     mycoins = []
     keys = dbconn.getkey(uno)
@@ -146,6 +160,15 @@ schedule.every().day.at("18:30").do(runamt)
 schedule.every().day.at("21:30").do(runamt)
 schedule.every().day.at("23:30").do(runamt)
 
+schedule.every().day.at("00:40").do(runamtpond)
+schedule.every().day.at("03:40").do(runamtpond)
+schedule.every().day.at("06:40").do(runamtpond)
+schedule.every().day.at("09:40").do(runamtpond)
+schedule.every().day.at("12:40").do(runamtpond)
+schedule.every().day.at("15:40").do(runamtpond)
+schedule.every().day.at("18:40").do(runamtpond)
+schedule.every().day.at("21:40").do(runamtpond)
+schedule.every().day.at("23:40").do(runamtpond)
 
 while True:
     schedule.run_pending()

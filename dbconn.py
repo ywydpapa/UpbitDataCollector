@@ -111,3 +111,18 @@ def userlist():
         return rows
 
 
+def userlistpond():
+    global rows
+    db6 = pymysql.connect(host=hostenv, user=userenv, password=passwordenv, db=dbenv, charset=charsetenv)
+    cur6 = db6.cursor()
+    try:
+        sql = "select userNo from pondUser where apiKey1 is not null and attrib not like %s"
+        cur6.execute(sql, 'XXXUP')
+        rows = cur6.fetchall()
+    except Exception as e:
+        print("사용자 조회 에러",e)
+    finally:
+        cur6.close()
+        db6.close()
+        return rows
+
