@@ -116,8 +116,11 @@ def runmain():
     try:
         users = dbconn.userlist()
         for user in users:
-            setLog(user)
-            time.sleep(1) #10초 대기 후 실행
+            try:
+                setLog(user)
+                time.sleep(1) #10초 대기 후 실행
+            except Exception as e:
+                continue
     except Exception as e:
         print("자동 반복 거래기록 실행 에러",e)
     finally:
@@ -128,8 +131,11 @@ def runmainpond():
     try:
         users = dbconn.userlistpond()
         for user in users:
-            setLogpond(user)
-            time.sleep(1) #10초 대기 후 실행
+            try:
+                setLogpond(user)
+                time.sleep(1) #10초 대기 후 실행
+            except Exception as e:
+                continue
     except Exception as e:
         print("자동 반복 거래기록 실행 에러",e)
     finally:
@@ -140,11 +146,13 @@ def runamt():
     try:
         users = dbconn.userlist()
         for user in users:
-            items = getWallet(user)
-            print(items)
-            for item in items:
-                dbconn.insertAmt(user[0], item[0], float(item[1]), float(item[2]), float(item[3]))
-            time.sleep(1) #1초 대기 후 실행
+            try:
+                items = getWallet(user)
+                for item in items:
+                    dbconn.insertAmt(user[0], item[0], float(item[1]), float(item[2]), float(item[3]))
+                time.sleep(1) #1초 대기 후 실행
+            except Exception as e:
+                continue
     except Exception as e:
         print("자동 반복 자산 인서트 실행 에러",e)
     finally:
@@ -155,10 +163,13 @@ def runamtpond():
     try:
         users = dbconn.userlistpond()
         for user in users:
-            items = getWalletpond(user)
-            for item in items:
-                dbconn.insertAmt(user[0], item[0], float(item[1]), float(item[2]), float(item[3]))
-            time.sleep(1) #1초 대기 후 실행
+            try:
+                items = getWalletpond(user)
+                for item in items:
+                    dbconn.insertAmt(user[0], item[0], float(item[1]), float(item[2]), float(item[3]))
+                time.sleep(1) #1초 대기 후 실행
+            except Exception as e:
+                continue
     except Exception as e:
         print("Pond 반복 자산 인서트 실행 에러",e)
     finally:
