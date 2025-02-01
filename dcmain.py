@@ -50,7 +50,7 @@ def setLog(uno):
             for item in trade:
                 uuidchk = item["uuid"]
                 if dbconn.checkuuid(uuidchk) != 0:
-                    print("이미 존재하는 거래")
+                    pass
                 else:
                     if item["side"] == "ask":
                         print(item)
@@ -70,7 +70,7 @@ def setLog(uno):
                             ldata13 = item["trades_count"]
                             dbconn.insertLog(uno, ldata01, ldata02, ldata03, ldata04, ldata05, ldata06, ldata07, ldata08, ldata09, ldata10, ldata11,ldata12, ldata13)
                     else:
-                        print("매수거래 패스")
+                        pass
     except Exception as e:
         print("거래 기록 에러 ",e, "사용자 :", uno)
     finally:
@@ -85,7 +85,7 @@ def setLogpond(uno):
             for item in trade:
                 uuidchk = item["uuid"]
                 if dbconn.checkuuid(uuidchk) != 0:
-                    print("이미 존재하는 거래")
+                    pass
                 else:
                     if item["side"] == "ask":
                         print(item)
@@ -105,7 +105,7 @@ def setLogpond(uno):
                             ldata13 = item["trades_count"]
                             dbconn.insertLog(uno, ldata01, ldata02, ldata03, ldata04, ldata05, ldata06, ldata07, ldata08, ldata09, ldata10, ldata11,ldata12, ldata13)
                     else:
-                        print("매수거래 패스")
+                        pass
     except Exception as e:
         print("거래 기록 에러 ",e, "사용자 :", uno)
     finally:
