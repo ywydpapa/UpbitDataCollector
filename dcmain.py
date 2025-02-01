@@ -156,7 +156,6 @@ def runamtpond():
         users = dbconn.userlistpond()
         for user in users:
             items = getWalletpond(user)
-            print(items)
             for item in items:
                 dbconn.insertAmt(user[0], item[0], float(item[1]), float(item[2]), float(item[3]))
             time.sleep(1) #10초 대기 후 실행
@@ -208,6 +207,7 @@ def getWalletpond(uno):
             continue
     return mycoins
 
+
 schedule.every().day.at("01:00").do(runmain)
 schedule.every().day.at("03:00").do(runmain)
 schedule.every().day.at("05:00").do(runmain)
@@ -244,16 +244,16 @@ schedule.every().day.at("18:30").do(runamt)
 schedule.every().day.at("21:30").do(runamt)
 schedule.every().day.at("23:30").do(runamt)
 
-schedule.every().day.at("00:40").do(runamtpond)
-schedule.every().day.at("03:40").do(runamtpond)
-schedule.every().day.at("06:40").do(runamtpond)
-schedule.every().day.at("09:40").do(runamtpond)
-schedule.every().day.at("12:40").do(runamtpond)
-schedule.every().day.at("15:40").do(runamtpond)
-schedule.every().day.at("18:40").do(runamtpond)
-schedule.every().day.at("21:40").do(runamtpond)
-schedule.every().day.at("23:40").do(runamtpond)
+schedule.every().day.at("01:30").do(runamtpond)
+schedule.every().day.at("04:30").do(runamtpond)
+schedule.every().day.at("07:30").do(runamtpond)
+schedule.every().day.at("10:30").do(runamtpond)
+schedule.every().day.at("13:30").do(runamtpond)
+schedule.every().day.at("16:30").do(runamtpond)
+schedule.every().day.at("19:30").do(runamtpond)
+schedule.every().day.at("22:30").do(runamtpond)
 
 while True:
+    runamtpond()
     schedule.run_pending()
     time.sleep(10)
